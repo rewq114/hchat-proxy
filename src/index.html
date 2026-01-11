@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>HChat Proxy Settings</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f4f6f9;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+
+      .container {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-top: 0;
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 14px;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 14px;
+      }
+
+      .actions {
+        margin-top: 25px;
+        display: flex;
+        gap: 10px;
+      }
+
+      button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background: #3498db;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #2980b9;
+      }
+
+      .btn-success {
+        background: #2ecc71;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #27ae60;
+      }
+
+      .btn-danger {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c0392b;
+      }
+
+      #status-bar {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #7f8c8d;
+        text-align: center;
+      }
+
+      .running {
+        color: #2ecc71;
+        font-weight: bold;
+      }
+
+      .stopped {
+        color: #e74c3c;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>HChat Proxy Settings</h1>
+
+      <div class="form-group">
+        <label for="apiKey">API Key</label>
+        <input type="password" id="apiKey" placeholder="Enter HChat API Key" />
+      </div>
+
+      <div class="form-group">
+        <label for="apiBase">API Base URL</label>
+        <input
+          type="text"
+          id="apiBase"
+          value="https://h-chat-api.autoever.com/v2/api"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="port">Proxy Port</label>
+        <input type="number" id="port" value="11435" />
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="autoStart" style="width: auto" />
+          Auto-start server on launch
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="saveBtn" class="btn-primary">Save Settings</button>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0" />
+
+      <div class="actions">
+        <button id="startBtn" class="btn-success">Start Server</button>
+        <button id="stopBtn" class="btn-danger">Stop Server</button>
+      </div>
+
+      <div id="status-bar">
+        Status: <span id="statusText" class="stopped">Stopped</span>
+        <div id="web-link" style="margin-top: 10px; display: none">
+          <a
+            href="#"
+            id="openWebBtn"
+            style="color: #3498db; text-decoration: none; font-weight: 600"
+            >Open Web Status Page</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

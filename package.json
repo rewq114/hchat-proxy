@@ -1,57 +1,57 @@
 {
-    "name": "hchat-proxy",
-    "version": "1.0.1",
-    "description": "Desktop proxy for HChat OpenAI-compatible API",
-    "main": "dist/main.js",
-    "scripts": {
-        "start": "electron .",
-        "build": "tsc && npm run copy-assets",
-        "copy-assets": "powershell -Command \"New-Item -ItemType Directory -Path dist -Force; Copy-Item src/index.html dist/index.html -Force; Copy-Item src/renderer.js dist/renderer.js -Force\"",
-        "package": "npm run build && electron-builder"
+  "name": "hchat-proxy",
+  "version": "1.1.0",
+  "description": "Desktop proxy for HChat OpenAI-compatible API",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "powershell -Command \"New-Item -ItemType Directory -Path dist -Force; Copy-Item src/index.html dist/index.html -Force; Copy-Item src/renderer.js dist/renderer.js -Force\"",
+    "package": "npm run build && electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
+    "uuid": "^9.0.1",
+    "hchat-sdk-node": "file:../hchat-sdk-node"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "typescript": "^5.3.3"
+  },
+  "build": {
+    "appId": "com.hchat.desktop",
+    "productName": "HChat Proxy",
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "dotenv": "^16.3.1",
-        "electron-store": "^8.1.0",
-        "electron-updater": "^6.1.7",
-        "uuid": "^9.0.1",
-        "hchat-sdk-node": "file:../hchat-sdk-node"
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ],
+      "icon": "assets/icon.png"
     },
-    "devDependencies": {
-        "electron": "^28.1.0",
-        "electron-builder": "^24.9.1",
-        "typescript": "^5.3.3"
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
-    "build": {
-        "appId": "com.hchat.desktop",
-        "productName": "HChat Proxy",
-        "files": [
-            "dist/**/*",
-            "assets/**/*",
-            "package.json"
-        ],
-        "directories": {
-            "output": "release"
-        },
-        "win": {
-            "target": [
-                "portable",
-                "nsis"
-            ],
-            "icon": "assets/icon.png"
-        },
-        "nsis": {
-            "oneClick": false,
-            "allowToChangeInstallationDirectory": true
-        },
-        "publish": [
-            {
-                "provider": "github",
-                "owner": "rewq114",
-                "repo": "hchat-proxy"
-            }
-        ]
-    }
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "rewq114",
+        "repo": "hchat-proxy"
+      }
+    ]
+  }
 }

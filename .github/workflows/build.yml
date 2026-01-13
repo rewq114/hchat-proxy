@@ -34,6 +34,8 @@ jobs:
         run: npm install
 
       - name: Build and Release
-        run: npm run package
+        run: |
+          npm run build
+          npx electron-builder --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,6 @@
 {
   "name": "hchat-proxy",
-  "version": "1.1.1",
+  "version": "1.1.4",
   "description": "Desktop proxy for HChat OpenAI-compatible API",
   "main": "dist/main.js",
   "scripts": {

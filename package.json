@@ -7,7 +7,8 @@
     "start": "electron .",
     "build": "tsc && npm run copy-assets",
     "copy-assets": "powershell -Command \"New-Item -ItemType Directory -Path dist -Force; Copy-Item src/index.html dist/index.html -Force; Copy-Item src/renderer.js dist/renderer.js -Force\"",
-    "package": "npm run build && electron-builder"
+    "package": "npm run build && electron-builder",
+    "package:mac": "npm run build && electron-builder --mac"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +42,29 @@
         "nsis"
       ],
       "icon": "assets/icon.png"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/icon.png",
+      "category": "public.app-category.developer-tools"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "dir"
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,

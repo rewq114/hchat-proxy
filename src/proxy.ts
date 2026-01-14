@@ -247,17 +247,38 @@ export class HChatProxy {
         result &&
         (result as any)[Symbol.asyncIterator]
       ) {
-        res.writeHead(200, {
-          "Content-Type": "text/event-stream",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
-          "Access-Control-Allow-Origin": "*",
-        });
+        const isSSE = url.includes("alt=sse");
 
-        for await (const chunk of result as any) {
-          res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+        if (isSSE) {
+          res.writeHead(200, {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
+            "Access-Control-Allow-Origin": "*",
+          });
+
+          for await (const chunk of result as any) {
+            // Google SSE format is usually just data: <json>\n\n
+            res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+          }
+        } else {
+          // Default Google streaming format is a JSON array: [ chunk, chunk, ... ]
+          res.writeHead(200, {
+            "Content-Type": "application/json",
+            "Transfer-Encoding": "chunked",
+          });
+
+          res.write("[\n");
+          let first = true;
+          for await (const chunk of result as any) {
+            if (!first) {
+              res.write(",\n");
+            }
+            res.write(JSON.stringify(chunk));
+            first = false;
+          }
+          res.write("\n]");
         }
-        res.write("data: [DONE]\n\n");
         res.end();
       } else {
         res.writeHead(200, { "Content-Type": "application/json" });

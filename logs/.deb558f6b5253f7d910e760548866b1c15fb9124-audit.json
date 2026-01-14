@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 10
+    },
+    "auditLog": "C:\\coding\\hchat\\hchat-proxy\\logs\\.deb558f6b5253f7d910e760548866b1c15fb9124-audit.json",
+    "files": [
+        {
+            "date": 1768386077928,
+            "name": "C:\\coding\\hchat\\hchat-proxy\\logs\\hchat-proxy-2026-01-14.log",
+            "hash": "024e095288c43ee9b9a489ee405302575d66c4fd0d18bc3c5d53fe3d3dce2ef6"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -16,14 +16,6 @@ jobs:
       - name: Check out git repository
         uses: actions/checkout@v4
 
-      - name: Clone and Setup SDK dependency
-        run: |
-          cd ..
-          git clone https://github.com/rewq114/hchat-sdk-node.git hchat-sdk-node
-          cd hchat-sdk-node
-          npm install
-          npm run build
-
       - name: Install Node.js and npm
         uses: actions/setup-node@v4
         with:

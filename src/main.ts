@@ -3,6 +3,7 @@ import { autoUpdater } from "electron-updater";
 import * as path from "path";
 import Store from "electron-store";
 import { HChatProxy } from "./proxy";
+import logger from "./logger";
 
 const store = new Store();
 let mainWindow: BrowserWindow | null = null;
@@ -33,11 +34,11 @@ function createWindow() {
 function createTray() {
   // Correct path relative to dist/main.js
   const iconPath = path.join(__dirname, "../assets/icon.png");
-  console.log("[Main] Loading icon from:", iconPath);
+  logger.info("Loading icon from:", { path: iconPath });
 
   let icon = nativeImage.createFromPath(iconPath);
   if (icon.isEmpty()) {
-    console.error("[Main] Failed to load icon: Icon is empty");
+    logger.error("Failed to load icon: Icon is empty");
     // Fallback or just continue
   }
   // Resize for tray if needed (though Tray usually handles it, nativeImage is safer)
@@ -86,9 +87,10 @@ async function startProxy() {
     if (proxy) proxy.stop();
     proxy = new HChatProxy(config);
     await proxy.start();
-    console.log("Proxy started successfully");
+    logger.info("Proxy started successfully");
     mainWindow?.webContents.send("status", "running");
   } catch (error: any) {
+    logger.error("Failed to start server", { error: error.message });
     mainWindow?.webContents.send(
       "error",
       `Failed to start server: ${error.message}`
@@ -106,20 +108,20 @@ function stopProxy() {
 
 app.on("ready", async () => {
   try {
-    console.log("[Main] App ready, initializing...");
+    logger.info("App ready, initializing...");
     createWindow();
     createTray();
     autoUpdater.checkForUpdatesAndNotify();
 
     // Auto-start if configured
     if (store.get("autoStart")) {
-      console.log("[Main] Auto-starting proxy...");
+      logger.info("Auto-starting proxy...");
       await startProxy();
     } else {
       mainWindow?.show();
     }
   } catch (error) {
-    console.error("[Main] Error during startup:", error);
+    logger.error("Error during startup", { error });
   }
 });
 

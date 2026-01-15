@@ -16,18 +16,33 @@ export function handleProxyError(
 
   // Determine appropriate HTTP status code
   const statusCode =
-    error.statusCode || error.code === "ECONNREFUSED" ? 503 : 500;
+    error.statusCode ||
+    error.context?.metadata?.status ||
+    (error.code === "ECONNREFUSED" ? 503 : 500);
 
   // Check if headers were already sent
   if (res.headersSent) {
-    // If in streaming mode, try to send error as SSE event
     if (!res.writableEnded) {
       try {
-        res.write(
-          `data: ${JSON.stringify({
-            error: { message: error.message, type: "proxy_error" },
-          })}\n\n`
-        );
+        const errorMessage =
+          error.context?.metadata?.errorData?.error?.message ||
+          error.context?.metadata?.errorData?.message ||
+          error.message;
+
+        if (context === "anthropic") {
+          res.write(
+            `data: ${JSON.stringify({
+              type: "error",
+              error: { type: "overloaded_error", message: errorMessage },
+            })}\n\n`
+          );
+        } else {
+          res.write(
+            `data: ${JSON.stringify({
+              error: { message: errorMessage, type: "proxy_error" },
+            })}\n\n`
+          );
+        }
       } catch (writeError) {
         logger.error("Failed to write error to stream", { error: writeError });
       }
@@ -36,15 +51,53 @@ export function handleProxyError(
     return;
   }
 
-  // Send error response
+  // Extract the most relevant error message
+  const finalMessage =
+    error.context?.metadata?.errorData?.error?.message ||
+    error.context?.metadata?.errorData?.message ||
+    error.message;
+
+  // Send context-aware error response
   res.writeHead(statusCode, { "Content-Type": "application/json" });
-  res.end(
-    JSON.stringify({
-      error: {
-        message: error.message || "Internal server error",
-        type: error.constructor.name || "UnknownError",
-        code: error.code,
-      },
-    })
-  );
+
+  if (context === "anthropic") {
+    // Return Anthropic native error format
+    res.end(
+      JSON.stringify({
+        type: "error",
+        error: {
+          type:
+            error.code === "LLM_RATE_LIMIT"
+              ? "rate_limit_error"
+              : "invalid_request_error",
+          message: finalMessage,
+        },
+      })
+    );
+  } else if (context === "openai") {
+    // Return OpenAI native error format
+    res.end(
+      JSON.stringify({
+        error: {
+          message: finalMessage,
+          type:
+            error.code === "LLM_RATE_LIMIT"
+              ? "insufficient_quota"
+              : "invalid_request_error",
+          code: error.code,
+        },
+      })
+    );
+  } else {
+    // Default HChatProxy error format
+    res.end(
+      JSON.stringify({
+        error: {
+          message: finalMessage,
+          type: error.constructor.name || "UnknownError",
+          code: error.code,
+        },
+      })
+    );
+  }
 }

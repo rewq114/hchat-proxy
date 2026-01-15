@@ -1,4 +1,5 @@
 import * as http from "http";
+import { log } from "./client/common/Logger";
 import logger from "./logger";
 import { routeTable, matchRoute } from "./routes";
 import {
@@ -37,6 +38,7 @@ export class HChatProxy {
   private googleService: GoogleService;
   private modelsService: ModelsService;
   private embeddingsService: EmbeddingsService;
+  private readonly provider = "proxy";
 
   constructor(private config: ProxyConfig) {
     // Initialize services once (singleton pattern)
@@ -206,6 +208,15 @@ export class HChatProxy {
   ): Promise<void> {
     const body = await this.parseBody(req);
 
+    // 로그 추가: 프록시에 들어오는 생(raw) 요청 확인
+    log.info("Proxy", `Incoming Anthropic request: ${req.method} ${req.url}`);
+    log.dev(
+      "Proxy",
+      "Incoming Anthropic Headers:",
+      JSON.stringify(req.headers, null, 2)
+    );
+    log.dev("Proxy", "Incoming Anthropic Body:", JSON.stringify(body, null, 2));
+
     try {
       const result = await this.anthropicService.create(body);
 
@@ -224,6 +235,11 @@ export class HChatProxy {
         }
         res.end();
       } else {
+        log.dev(
+          "Proxy",
+          "Outgoing Anthropic Response:",
+          JSON.stringify(result, null, 2)
+        );
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(result));
       }
@@ -238,6 +254,17 @@ export class HChatProxy {
     url: string
   ): Promise<void> {
     const body = await this.parseBody(req);
+
+    log.info(
+      this.provider,
+      "Incoming Google request headers:",
+      JSON.stringify(req.headers, null, 2)
+    );
+    log.dev(
+      this.provider,
+      "Incoming Google request body:",
+      JSON.stringify(body, null, 2)
+    );
 
     try {
       const result = await this.googleService.forward(url, body);

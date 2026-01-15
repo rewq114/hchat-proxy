@@ -41,7 +41,7 @@ export const routeTable: RouteDefinition[] = [
 
   // Native Google
   {
-    pattern: /\/v1beta\/models\/.+/,
+    pattern: /\/(v1|v1beta)\/models\/.+/,
     method: "POST",
     handler: "google",
     description: "Native Google Gemini",
